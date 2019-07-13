@@ -1,0 +1,85 @@
+BMI Calculator App
+========================================================
+author: DonM
+date: July 11, 2019
+autosize: true
+
+========================================================
+## Why create a Body Mass Index (BMI) app? 
+Most body mass index guides present a chart or data entry fields for weight and height if it is a web app. To enter more values for the app - say, to see what your BMI would be if you lost ten pounds - requires re-entering the values and clicking submit in most cases.
+
+In the case of this app I've created something that lets you change height and weight with ease through the use of sliders, and it automatically tells you if your BMI is too low, fine, or too high. 
+## The UI (User Interface) Design
+The first step is to read in the UI code. This is a shiny app, so I call the shiny package. I also called shinyWidgets because I wanted to change the background colour of the app by using setBackgroundColor.
+
+```r
+library(shiny)
+library(shinyWidgets)
+```
+
+========================================================
+<small>The next chunk of code calls shinyUI and fluid page dimensions. Then I call the style.css file that changes the font, size, and colour of the header fonts. I then apply a title to the app.</small>
+
+```r
+# Define UI for application 
+shinyUI(fluidPage(
+  includeCSS("style.css"),
+  # Application title
+  titlePanel("Body Mass Index Calculator"),
+```
+<small>I then change the background colour, and set the slider ranges (I've just shown the code for weight here).</small>
+
+```r
+setBackgroundColor(color="aqua"),
+  # Sidebar with a slider input for number of bins 
+  sidebarLayout(sidebarPanel(sliderInput("Weight","Weight in pounds",
+                min = 100,max = 250,value = 150),
+```
+
+========================================================
+<small>Next, I used tabsets and create a fancy interface with tabs for the results and the explanatory text. I've cut off some of the explanatory text (you get the idea).</small>
+
+```r
+# Create the tabsets for the interface
+mainPanel(tabsetPanel(tabPanel(h3("Results"),br(),h3(textOutput("BMIresult"))),
+tabPanel(h3("Instructions"),br(),h4("About this calculator"),br(),"This Body Mass Index calculator is intended to give you feedback on whether you are underweight, a ...
+```
+<small>The server side code converts the input data to a BMI result called from the UI.</small>
+
+```r
+  output$BMIresult <- renderText({
+    kg <- (input$Weight) / 2.2
+    meters <- (input$Height) * 0.0254 
+    BMI <- kg/(meters^2)
+    if (BMI < 18.5) {BMImessage <- ", which is too low"}
+    if (BMI > 25) {BMImessage <- ", which is too high"}
+    if ((18.5 < BMI) & (BMI < 25)) {BMImessage <- ", which is fine."}
+    paste("Your BMI is",round(BMI,1),BMImessage)
+```
+
+========================================================
+## Example Server Calculation
+
+<small> We'll use the default values for weight (150) and height (70), which are given in Imperial units, in a sample calculation. These need to be converted to metric units. The default values become:</small>
+
+```r
+kg <- 150 / 2.2
+meters <- 70 * 0.0254
+BMI <- kg/(meters^2)
+print("The default BMI is:")
+```
+
+```
+[1] "The default BMI is:"
+```
+
+```r
+print(round(BMI,1))
+```
+
+```
+[1] 21.6
+```
+
+## Conclusion
+<small>This BMI calculator app allows the user to investigate how changes in weight or height affect BMI.</small>
